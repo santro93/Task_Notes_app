@@ -16,14 +16,33 @@ class _SigninPageState extends State<SigninPage> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   //////////////////   Email  Sign  In  /////////////
   void _signingIn() {
+    final snackBar = SnackBar(
+      duration: const Duration(milliseconds: 5000),
+      content: const Text(
+        "Account Is Logged In.",
+        style: TextStyle(fontSize: 20, color: Colors.black),
+      ),
+      backgroundColor: Colors.green[400],
+    );
+
     FirebaseAuth.instance
         .signInWithEmailAndPassword(
             email: emailController.text, password: passwordController.text)
         .then((value) {
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const AppMainPage()),
       );
     }).onError((error, stackTrace) {
+      // final snackBar = SnackBar(
+      //   duration: const Duration(milliseconds: 5000),
+      //   content: const Text(
+      //     "Account Is not Logged In.",
+      //     style: TextStyle(fontSize: 20, color: Colors.black),
+      //   ),
+      //   backgroundColor: Colors.green[400],
+      // );
+      // ignore: avoid_print
       print("Error ${error.toString()}");
     });
   }
@@ -95,7 +114,7 @@ class _SigninPageState extends State<SigninPage> {
               height: 10,
             ),
             const Text(
-              "Forgotten Password ? Click Me",
+              "Forgotten Password ?  Click Me",
               style: TextStyle(fontSize: 20, color: Colors.black),
             ),
             const SizedBox(

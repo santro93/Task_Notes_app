@@ -1,9 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 // import 'package:task_notes/Model/firebsaseAuth.dart';
 import 'package:task_notes/screens/signin.dart';
-import 'package:task_notes/screens/app_main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignupPage extends StatefulWidget {
@@ -21,9 +19,11 @@ class _SignupPageState extends State<SignupPage> {
 
 ////////////// Database Storage   ////////////////////////////
   void _storeUserDetails() async {
+    final uid = _auth.currentUser?.uid;
     await firestore
         .collection('users')
-        .add({
+        .doc(uid)
+        .set({
           'name': name.text,
           'email': email.text,
           'password': password.text,
@@ -60,7 +60,7 @@ class _SignupPageState extends State<SignupPage> {
                 _storeUserDetails(),
                 ScaffoldMessenger.of(context).showSnackBar(snackBar),
                 Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const AppMainPage()),
+                  MaterialPageRoute(builder: (context) => const SigninPage()),
                 ),
               });
     } else {
@@ -95,113 +95,107 @@ class _SignupPageState extends State<SignupPage> {
         backgroundColor: Colors.green[400],
       ),
       body: Container(
-        // body: Center(
-        child: Container(
-          alignment: Alignment.center,
-          color: Colors.amber[500],
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Stack(
-                  children: [
-                    const CircleAvatar(
-                      radius: 50,
-                      backgroundImage:
-                          NetworkImage('https://picsum.photos/200/300'),
-                    ),
-                    Positioned(
-                      left: 70,
-                      bottom: -10,
-                      child: IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.add),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextField(
-                  controller: name,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(gapPadding: 7),
-                    hintText: "Enter Your Full Name",
+        alignment: Alignment.center,
+        color: Colors.amber[500],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Stack(
+                children: [
+                  const CircleAvatar(
+                    radius: 50,
+                    backgroundImage:
+                        NetworkImage('https://picsum.photos/200/300'),
                   ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextField(
-                  controller: email,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(gapPadding: 7),
-                    hintText: "Enter Your Email Id",
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextField(
-                  controller: password,
-                  obscureText: _isObscure,
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(gapPadding: 7),
-                    labelText: "Enter Your Password",
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isObscure ? Icons.visibility : Icons.visibility_off,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _isObscure = !_isObscure;
-                        });
-                      },
+                  Positioned(
+                    left: 70,
+                    bottom: -10,
+                    child: IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.add),
                     ),
                   ),
+                ],
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              TextField(
+                controller: name,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(gapPadding: 7),
+                  hintText: "Enter Your Full Name",
                 ),
-                const SizedBox(
-                  height: 20,
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              TextField(
+                controller: email,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(gapPadding: 7),
+                  hintText: "Enter Your Email Id",
                 ),
-                RaisedButton(
-                  onPressed: _createAccount,
-                  color: Colors.green[400],
-                  child: const Text(
-                    "Create Account",
-                    style: TextStyle(fontSize: 20, color: Colors.black),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              TextField(
+                controller: password,
+                obscureText: _isObscure,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(gapPadding: 7),
+                  labelText: "Enter Your Password",
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isObscure ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isObscure = !_isObscure;
+                      });
+                    },
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                const Text(
-                  "Have Already Account ?",
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              // ignore: deprecated_member_use
+              RaisedButton(
+                onPressed: _createAccount,
+                color: Colors.green[400],
+                child: const Text(
+                  "Create Account",
                   style: TextStyle(fontSize: 20, color: Colors.black),
                 ),
-                const SizedBox(
-                  height: 20,
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              const Text(
+                "Have Already Account ?",
+                style: TextStyle(fontSize: 20, color: Colors.black),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              // ignore: deprecated_member_use
+              RaisedButton(
+                onPressed: _switchToSignin,
+                color: Colors.green[400],
+                child: const Text(
+                  "Sign In",
+                  style: TextStyle(fontSize: 20, color: Colors.black),
                 ),
-                RaisedButton(
-                  onPressed: _switchToSignin,
-                  color: Colors.green[400],
-                  child: const Text(
-                    "Sign In",
-                    style: TextStyle(fontSize: 20, color: Colors.black),
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-
-                // SignInButton(
-                //   Buttons.Google,
-                //   onPressed: () {},
-                // )
-              ],
-            ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+            ],
           ),
         ),
       ),
