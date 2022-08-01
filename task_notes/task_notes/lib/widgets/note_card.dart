@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:task_notes/models/note.dart';
-import 'package:task_notes/screens/noteView.dart';
-import 'package:task_notes/screens/taskadd.dart';
+import 'package:task_notes/model/note.dart';
+import 'package:task_notes/screens/addnote.dart';
 
 class NoteCard extends StatelessWidget {
   final Note note;
@@ -35,6 +32,22 @@ class NoteCard extends StatelessWidget {
                   color: Colors.black87,
                 ),
               ),
+              Text(
+                "Content :- ${note.des}",
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              // Text(
+              //   "Date & Time :- ${note.dateTime}",
+              //   style: const TextStyle(
+              //     fontSize: 15,
+              //     fontWeight: FontWeight.bold,
+              //     color: Colors.black87,
+              //   ),
+              // ),
             ],
           ),
         ),

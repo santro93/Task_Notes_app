@@ -41,8 +41,11 @@ dependencies:
   google_sign_in: ^5.4.0
   flutter_signin_button: ^2.0.0
   cloud_firestore: ^3.2.1
-
-
+  sqflite:
+  path_provider:
+  path:
+  shared_preferences:
+  intl: ^0.17.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

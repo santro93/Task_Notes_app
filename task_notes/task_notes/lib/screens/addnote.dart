@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:task_notes/models/note.dart';
-import 'package:task_notes/screens/app_main.dart';
+import 'package:task_notes/model/note.dart';
+import 'package:task_notes/screens/archieved_notes.dart';
+import 'package:task_notes/screens/notes_keep.dart';
+import 'package:task_notes/service/database__helper.dart';
+import 'package:task_notes/service/firebasenote_service.dart';
 
 class AddNote extends StatefulWidget {
   Note? note;
@@ -16,6 +19,7 @@ class _AddNoteState extends State<AddNote> {
   TextEditingController title = TextEditingController();
   late TextEditingController des;
   // = TextEditingController();
+  bool isArchieve = false;
 
   CollectionReference ref = FirebaseFirestore.instance
       .collection('users')
@@ -45,23 +49,61 @@ class _AddNoteState extends State<AddNote> {
 
   void addNote() async {
     if (widget.note != null) {
-      ref
-          .doc(widget.note?.id!)
-          .update({'title': title.text, 'content': des.text});
+      final note = Note(
+        id: widget.note!.id,
+        title: title.text,
+        des: des.text,
+        isArchive: widget.note!.isArchive,
+      );
+      DatabaseHelper.updateNote(note);
     } else {
-      ref.add({'title': title.text, 'content': des.text});
+      DatabaseHelper.addNote(
+        title: title.text,
+        des: des.text,
+      );
     }
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => NoteKeep()));
+  }
 
-    Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const AppMainPage()));
+  void deleteNote() async {
+    if (widget.note != null) {
+      await ref.doc(widget.note?.id!).delete();
+      // Navigator.of(context).pop();
+      DatabaseHelper.deleteNote(widget.note!);
+      Navigator.of(context)
+          .pushReplacement(MaterialPageRoute(builder: (context) => NoteKeep()));
+    }
+  }
+
+  void archieveNote() async {
+    if (widget.note != null) {
+      final note = Note(
+          id: widget.note!.id,
+          title: title.text,
+          des: des.text,
+          isArchive: widget.note!.isArchive);
+      await FirebaseNoteService.instance.archievedNotes(note);
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => ArchievedNotes()));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(onPressed: addNote, icon: const Icon(Icons.save)),
+          IconButton(onPressed: deleteNote, icon: const Icon(Icons.delete)),
+          IconButton(
+              onPressed: archieveNote,
+              icon: isArchieve
+                  ? Icon(Icons.archive)
+                  : Icon(Icons.archive_outlined)),
+        ],
         title: const Text(
-          'Add Note Screen',
+          'Add Note',
           style: TextStyle(
               fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
         ),
@@ -70,7 +112,8 @@ class _AddNoteState extends State<AddNote> {
       ),
       body: Center(
         child: Container(
-          color: Colors.amberAccent[200],
+          color: Colors.white70,
+          // color: Colors.amberAccent[200],
           child: Column(
             children: [
               TextField(
@@ -91,22 +134,6 @@ class _AddNoteState extends State<AddNote> {
               const SizedBox(
                 height: 20,
               ),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.save, color: Colors.black),
-                onPressed: addNote,
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                    Colors.green[400],
-                  ),
-                ),
-                label: const Text(
-                  'Save Note',
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black),
-                ),
-              )
             ],
           ),
         ),

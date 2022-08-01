@@ -1,45 +1,24 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-// import 'package:task_notes/Model/firebsaseAuth.dart';
 import 'package:task_notes/screens/signin.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:task_notes/service/firebase_auth.dart';
 
 class SignupPage extends StatefulWidget {
+  const SignupPage({Key? key}) : super(key: key);
+
   @override
   State<SignupPage> createState() => _SignupPageState();
 }
 
 class _SignupPageState extends State<SignupPage> {
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   bool _isObscure = true;
   TextEditingController name = TextEditingController();
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
-
-////////////// Database Storage   ////////////////////////////
-  void _storeUserDetails() async {
-    final uid = _auth.currentUser?.uid;
-    await firestore
-        .collection('users')
-        .doc(uid)
-        .set({
-          'name': name.text,
-          'email': email.text,
-          'password': password.text,
-        })
-        .then((value) => {
-              print("New database Added"),
-            })
-        .onError(
-          (error, stackTrace) => {
-            print("Error ${error.toString()}"),
-          },
-        );
-  }
+  final formKey = GlobalKey<FormState>();
+  String template = "";
 
 ////////////// Account  Create  ////////////////////////////
-  void _createAccount() async {
+  Future<void> _createAccount() async {
     final snackBar = SnackBar(
       duration: const Duration(milliseconds: 5000),
       content: const Text(
@@ -52,17 +31,12 @@ class _SignupPageState extends State<SignupPage> {
     if (name.text.isNotEmpty &&
         email.text.isNotEmpty &&
         password.text.isNotEmpty) {
-      _auth
-          .createUserWithEmailAndPassword(
-              email: email.text, password: password.text)
-          .then((value) => {
-                print("New account created"),
-                _storeUserDetails(),
-                ScaffoldMessenger.of(context).showSnackBar(snackBar),
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const SigninPage()),
-                ),
-              });
+      FirebaseAuthentication.instance
+          .signUp(name: name.text, email: email.text, password: password.text);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const SigninPage()),
+      );
     } else {
       final snackBar = SnackBar(
         duration: const Duration(milliseconds: 5000),
@@ -70,10 +44,18 @@ class _SignupPageState extends State<SignupPage> {
           "Account Is Not Created.",
           style: TextStyle(fontSize: 20, color: Colors.black),
         ),
-        backgroundColor: Colors.green[400],
+        backgroundColor: Color.fromARGB(255, 56, 61, 56),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
+  }
+
+  @override
+  void dispose() {
+    name.dispose();
+    email.dispose();
+    password.dispose();
+    super.dispose();
   }
 
   void _switchToSignin() {
@@ -83,7 +65,10 @@ class _SignupPageState extends State<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
+    // final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
     return Scaffold(
+      // key: _scaffoldKey,
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
@@ -121,29 +106,62 @@ class _SignupPageState extends State<SignupPage> {
               const SizedBox(
                 height: 20,
               ),
-              TextField(
+              TextFormField(
                 controller: name,
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(gapPadding: 7),
                   hintText: "Enter Your Full Name",
                 ),
+                // validator: (value) {
+                //   if (value!.isEmpty ||
+                //       !RegExp(r'^[A-Z(1) a-z]+$').hasMatch(value)) {
+                //     return "Enter Correct Your Full Name";
+                //   } else {
+                //     return null;
+                //   }
+                // },
               ),
+              //  TextFormField(
+              //   controller: name,
+              //   keyboardType: TextInputType.emailAddress,
+              //   decoration: const InputDecoration(
+              //     border: OutlineInputBorder(gapPadding: 7),
+              //     hintText: "Enter Your Mobile No",
+              //   ),
+              //   validator: (value) {
+              //     if (value!.isEmpty ||
+              //         !RegExp(r'^[+]*[(]{0,1}{0-9}{1,4}[)]{0,1}[-\s\./0-9]+$').hasMatch(value!)) {
+              //       return "Enter Correct Your Mobile No";
+              //     } else {
+              //       return null;
+              //     }
+              //   },
+              // ),
               const SizedBox(
                 height: 20,
               ),
-              TextField(
+              TextFormField(
                 controller: email,
                 keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(gapPadding: 7),
                   hintText: "Enter Your Email Id",
                 ),
+                // validator: (value) {
+                //   if (value!.isEmpty ||
+                //       !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}')
+                //           .hasMatch(value)) {
+                //     return "Enter Correct  Email Id";
+                //   } else {
+                //     return null;
+                //   }
+                // },
               ),
               const SizedBox(
                 height: 20,
               ),
-              TextField(
+              TextFormField(
                 controller: password,
                 obscureText: _isObscure,
                 decoration: InputDecoration(
@@ -160,6 +178,14 @@ class _SignupPageState extends State<SignupPage> {
                     },
                   ),
                 ),
+                // validator: (value) {
+                //   if (value!.isEmpty ||
+                //       !RegExp(r'^[A-Z{1} a-z{2,}]+$').hasMatch(value)) {
+                //     return "Enter Correct Password";
+                //   } else {
+                //     return null;
+                //   }
+                // },
               ),
               const SizedBox(
                 height: 20,
@@ -167,6 +193,12 @@ class _SignupPageState extends State<SignupPage> {
               // ignore: deprecated_member_use
               RaisedButton(
                 onPressed: _createAccount,
+                // if (formKey.currentState!.validate()) {
+                //   final snackBar = SnackBar(
+                //       content: Text("Account Is Created Successfully."));
+                //   _scaffoldKey.currentState!.showSnackBar(snackBar);
+                // }
+
                 color: Colors.green[400],
                 child: const Text(
                   "Create Account",
