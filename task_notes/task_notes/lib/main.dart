@@ -13,7 +13,7 @@ void main() async {
   await SharedPreferences.getInstance();
   bool? isLoggedIn = sharedPreferences.getBool(isLoggedInkey);
   runApp(MaterialApp(
-    home: isLoggedIn ?? false ? NoteKeep() : const SigninPage(),
+    home: isLoggedIn ?? false ? NoteKeep() : const SigninPage(), 
     debugShowCheckedModeBanner: false,
   ));
 }

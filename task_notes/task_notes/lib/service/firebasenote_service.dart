@@ -28,6 +28,7 @@ class FirebaseNoteService {
       'title': title,
       'content': des,
       'dateTime': DateTime.now(),
+      "isArchive": false,
     });
     return document.id;
   }
@@ -37,6 +38,7 @@ class FirebaseNoteService {
       'id': note.id,
       'title': note.title,
       'content': note.des,
+      "isArchive": false,
     });
   }
 
@@ -59,12 +61,9 @@ class FirebaseNoteService {
   }
 
   Future<List<Note>> initialFetch() async {
-    // print("currentUser uid ${FirebaseAuth.instance.currentUser!.uid}");
-    // print("last Document ${lastDocument}");
-
     final snapshot = await ref
-        .orderBy("dateTime")
         // .where("isArchive", isEqualTo: false)
+        .orderBy("dateTime")
         .limit(10)
         .get();
     if (snapshot.docs.isNotEmpty) {
@@ -80,14 +79,15 @@ class FirebaseNoteService {
   }
 
   Future<List<Note>> fetchMoreData() async {
-    print(FirebaseAuth.instance.currentUser!.uid);
-
-    if (allLoaded == true || lastDocument == null) {
+    if (allLoaded == true) {
+      return [];
+    }
+    if (lastDocument == null) {
       return [];
     }
     final snapshot = await ref
-        .orderBy("dateTime")
         // .where("isArchive", isEqualTo: false)
+        .orderBy("dateTime")
         .startAfterDocument(lastDocument!)
         .limit(10)
         .get();
@@ -99,7 +99,6 @@ class FirebaseNoteService {
       dumyData.add(note);
     }
     if (snapshot.docs.length < 10) {
-      //if getting less than 10 notes means
       allLoaded = true;
     }
     return dumyData;
@@ -110,16 +109,12 @@ class FirebaseNoteService {
     lastDocument = null;
   }
 
-  Future<String> archievedNotes(Note note) async {
+  Future<void> archievedNotes() async {
     String result = "Some error occured ";
     try {
-      await ref
-        ..orderBy("dateTime").where("isArchive", isEqualTo: true).get();
-      return result = "Successfully Archieved Notes";
+      ref.where("isArchive", isEqualTo: true)..orderBy("dateTime").get();
     } catch (err) {
       result = err.toString();
-      return result = "Unsuccessfully Archieved Notes";
-      ;
     }
   }
 }

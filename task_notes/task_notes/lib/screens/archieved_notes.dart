@@ -1,14 +1,11 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:task_notes/model/note.dart';
-import 'package:task_notes/service/firebasenote_service.dart';
 import 'package:task_notes/widgets/note_card.dart';
 
 class ArchievedNotes extends StatefulWidget {
-  ArchievedNotes({Key? key}) : super(key: key);
+  const ArchievedNotes({Key? key}) : super(key: key);
 
   @override
   State<ArchievedNotes> createState() => _ArchievedNotesState();
@@ -34,10 +31,11 @@ class _ArchievedNotesState extends State<ArchievedNotes> {
       ),
       body: FutureBuilder<QuerySnapshot>(
           future: ref
+              .where("isArchive", isEqualTo: true)
               .orderBy(
                 "dateTime",
                 descending: true,
-              ).where("isArchive", isEqualTo: true)
+              )
               .get(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {

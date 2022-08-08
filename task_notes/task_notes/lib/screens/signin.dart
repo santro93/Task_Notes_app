@@ -1,4 +1,3 @@
-// ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task_notes/screens/notes_keep.dart';
@@ -50,7 +49,7 @@ class _SigninPageState extends State<SigninPage> {
 
         //////
         Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) =>  NoteKeep()));
+            MaterialPageRoute(builder: (context) => NoteKeep()));
       } else {
         final snackBar = SnackBar(
           duration: const Duration(milliseconds: 5000),
@@ -153,7 +152,7 @@ class _SigninPageState extends State<SigninPage> {
                 color: Colors.green[400],
                 onPressed: () {
                   Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => SignupPage()),
+                    MaterialPageRoute(builder: (context) => const SignupPage()),
                   );
                 },
                 child: const Text("Create Account",

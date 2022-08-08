@@ -5,9 +5,9 @@ class Note {
   String? title;
   String? des;
   Timestamp? dateTime;
-  bool isArchive = false;
+  bool isArchive;
 
-  Note({required this.isArchive, this.id, this.title, this.des, this.dateTime});
+  Note({this.isArchive = false, this.id, this.title, this.des, this.dateTime});
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -18,13 +18,13 @@ class Note {
       };
 
   static Note fromJson(DocumentSnapshot<Object?> doc) {
-    Map<String, dynamic> noteMap = doc.data() as Map<String, dynamic>;
+    // Map<String, dynamic> noteMap = doc.data() as Map<String, dynamic>;
     return Note(
-      id: noteMap["id"],
-      title: noteMap["title"],
-      des: noteMap["content"],
-      dateTime: noteMap["dateTime"],
-      isArchive: noteMap["isArchive"],
+      id: doc["id"],
+      title: doc["title"],
+      des: doc["content"],
+      dateTime: doc["dateTime"],
+      isArchive: doc["isArchive"],
     );
   }
 }

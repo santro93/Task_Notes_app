@@ -17,14 +17,19 @@ class FirebaseAuthentication {
     required String name,
     required String email,
     required String password,
+  
   }) async {
     String result;
     try {
       final userCredential = await auth.createUserWithEmailAndPassword(
           email: email, password: password);
       final uid = auth.currentUser?.uid;
-      model.User user =
-          model.User(username: name, email: email, password: password);
+      model.User user = model.User(
+        username: name,
+        email: email,
+        password: password,
+     
+      );
       await firestore.collection('users').doc(uid).set(user.toJson());
       return true;
     } catch (err) {

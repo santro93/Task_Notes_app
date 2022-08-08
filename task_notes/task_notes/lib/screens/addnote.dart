@@ -83,9 +83,9 @@ class _AddNoteState extends State<AddNote> {
           title: title.text,
           des: des.text,
           isArchive: widget.note!.isArchive);
-      await FirebaseNoteService.instance.archievedNotes(note);
+      await FirebaseNoteService.instance.archievedNotes();
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => ArchievedNotes()));
+          MaterialPageRoute(builder: (context) => const ArchievedNotes()));
     }
   }
 
@@ -96,11 +96,12 @@ class _AddNoteState extends State<AddNote> {
         actions: [
           IconButton(onPressed: addNote, icon: const Icon(Icons.save)),
           IconButton(onPressed: deleteNote, icon: const Icon(Icons.delete)),
+           IconButton(onPressed: (){}, icon: const Icon(Icons.punch_clock)),
           IconButton(
               onPressed: archieveNote,
               icon: isArchieve
-                  ? Icon(Icons.archive)
-                  : Icon(Icons.archive_outlined)),
+                  ? const Icon(Icons.archive)
+                  : const Icon(Icons.archive_outlined)),
         ],
         title: const Text(
           'Add Note',

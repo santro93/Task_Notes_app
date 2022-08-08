@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:task_notes/model/note.dart';
 import 'package:task_notes/screens/archieved_notes.dart';
+import 'package:task_notes/screens/remainder.dart';
 import 'package:task_notes/screens/search_note.dart';
 import 'package:task_notes/screens/signin.dart';
 import 'package:task_notes/screens/addnote.dart';
+import 'package:task_notes/screens/remainder.dart';
 import 'package:task_notes/service/firebase_auth.dart';
 import 'package:task_notes/service/firebasenote_service.dart';
 import 'package:task_notes/widgets/note_card.dart';
@@ -20,15 +22,11 @@ class _NoteKeepState extends State<NoteKeep> {
   bool loadding = false;
 
   initialFetch() async {
-    print("item length ${notesList.length}");
     List<Note> dumyData2 = await FirebaseNoteService.instance.initialFetch();
-
-    print("dumyData2 length ${dumyData2.length}");
     setState(() {
       notesList.addAll(dumyData2);
       loadding = false;
     });
-    print("item length adding dumyData2 ${notesList.length}");
   }
 
   fetchData() async {
@@ -52,7 +50,6 @@ class _NoteKeepState extends State<NoteKeep> {
       if (scrollController.position.pixels >=
               scrollController.position.maxScrollExtent &&
           !loadding) {
-        print("NewData Called");
         fetchData();
       }
     });
@@ -123,19 +120,33 @@ class _NoteKeepState extends State<NoteKeep> {
                 );
               },
             ),
-            const ListTile(
-              leading: Icon(Icons.remember_me),
-              title: Text(
-                'Reminders',
-                style: TextStyle(fontSize: 20),
-              ),
-            ),
+            ListTile(
+                leading: const Icon(Icons.remember_me),
+                title: const Text(
+                  'Remainder',
+                  style: TextStyle(fontSize: 20),
+                ),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Remainder(),
+                      ));
+                }),
             const ListTile(
               leading: Icon(Icons.create),
               title: Text(
                 'Create new label',
                 style: TextStyle(fontSize: 20),
               ),
+              // onTap: () {
+              //   Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //       builder: (context) => Remainder(),
+              //     ),
+              //   );
+              // },
             ),
             const ListTile(
               leading: Icon(Icons.settings),
@@ -145,13 +156,13 @@ class _NoteKeepState extends State<NoteKeep> {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.archive),
+              leading: const Icon(Icons.archive),
               title: const Text(
                 'Archive',
                 style: TextStyle(fontSize: 20),
               ),
               onTap: () {
-                Navigator.pushReplacement(
+                Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => ArchievedNotes(),
@@ -182,7 +193,7 @@ class _NoteKeepState extends State<NoteKeep> {
         child: (const Icon(Icons.add)),
       ),
       body: loadding
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : GridView.builder(
               controller: scrollController,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

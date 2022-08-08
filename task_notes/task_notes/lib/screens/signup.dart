@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:task_notes/screens/signin.dart';
 import 'package:task_notes/service/firebase_auth.dart';
@@ -11,11 +13,12 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
   bool _isObscure = true;
+  Uint8List? _image;
   TextEditingController name = TextEditingController();
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
-  final formKey = GlobalKey<FormState>();
-  String template = "";
+  // final formKey = GlobalKey<FormState>();
+  // String template = "";
 
 ////////////// Account  Create  ////////////////////////////
   Future<void> _createAccount() async {
@@ -38,9 +41,9 @@ class _SignupPageState extends State<SignupPage> {
         MaterialPageRoute(builder: (context) => const SigninPage()),
       );
     } else {
-      final snackBar = SnackBar(
-        duration: const Duration(milliseconds: 5000),
-        content: const Text(
+      final snackBar = const SnackBar(
+        duration: Duration(milliseconds: 5000),
+        content: Text(
           "Account Is Not Created.",
           style: TextStyle(fontSize: 20, color: Colors.black),
         ),
@@ -56,7 +59,7 @@ class _SignupPageState extends State<SignupPage> {
     email.dispose();
     password.dispose();
     super.dispose();
-  }
+  } 
 
   void _switchToSignin() {
     Navigator.of(context)
@@ -108,7 +111,7 @@ class _SignupPageState extends State<SignupPage> {
               ),
               TextFormField(
                 controller: name,
-                keyboardType: TextInputType.emailAddress,
+                keyboardType: TextInputType.name,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(gapPadding: 7),
                   hintText: "Enter Your Full Name",
